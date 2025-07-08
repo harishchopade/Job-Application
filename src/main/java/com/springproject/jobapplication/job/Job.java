@@ -11,10 +11,11 @@ import jakarta.persistence.Table;       // Used to give table a custom name
 public class Job {
 
     @Id // This will mark id as primary key and manage by spring boot
-    
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // Auto-generates the primary key value using the database's identity column (e.g., auto-increment)
-
+    // If we pass id manually then error came 
+    
     private long id;
     private String title;
     private String description;
