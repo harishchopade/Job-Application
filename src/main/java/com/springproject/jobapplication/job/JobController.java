@@ -9,7 +9,7 @@ import java.util.List;
 //@RequestMapping("/jobs")    // (Class level Annotation which apply given route to all the methods of the class as base URL)
 public class JobController {
     private JobService jobService;
-
+    
     public JobController(JobService jobService) {
         this.jobService = jobService;
     }

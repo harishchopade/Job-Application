@@ -1,9 +1,12 @@
 package com.springproject.jobapplication.job;
 
+import com.springproject.jobapplication.company.Company;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;       // Used to give table a custom name
 
 @Entity
@@ -22,6 +25,9 @@ public class Job {
     private String minSalary;
     private String maxSalary;
     private String location ;
+
+    @ManyToOne
+    private Company company;
 
     // Default constructor needed for JPA to create empty object and then add fields into it
     public Job() {
@@ -83,4 +89,13 @@ public class Job {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+    
 }
