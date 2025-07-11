@@ -50,8 +50,19 @@ public class CompanyServiceImpl implements CompanyService{
         
         Company company = companyRepository.findById(id).orElse(null);
         if(company != null){
-            company.setName(updatedCompany.getName());
-            company.setDescription(updatedCompany.getDescription());
+            // company.setName(updatedCompany.getName());
+            // company.setDescription(updatedCompany.getDescription());
+
+            // If we do above there is 1 problem that we cant update 1 field we need to update both the fields otherwise it come up with null
+           
+            // Problem hai below solution hai
+
+            if (updatedCompany.getName() != null) {
+                company.setName(updatedCompany.getName());
+            }
+            if (updatedCompany.getDescription() != null) {
+                company.setDescription(updatedCompany.getDescription());
+            }
             companyRepository.save(company);
             return true;
         }

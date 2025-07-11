@@ -57,11 +57,24 @@ public class ReviewServicesImpl implements ReviewServices {
 
     @Override
     public boolean updateReview(long companyId, long reviewId, Reviews updatedReviews) {
+        Reviews existingReview = reviewRepository.findById(reviewId).orElse(null);
     
-        if(companyService.getCompanyById(companyId) != null){
-            updatedReviews.setCompany(companyService.getCompanyById(companyId));
-            updatedReviews.setId(reviewId);
-            reviewRepository.save(updatedReviews);
+        if (existingReview != null && existingReview.getCompany().getId() == companyId) {
+        
+            if (updatedReviews.getTitle() != null) {
+                existingReview.setTitle(updatedReviews.getTitle());
+            }
+
+            if (updatedReviews.getDescription() != null) {
+                existingReview.setDescription(updatedReviews.getDescription());
+            }
+
+            // For primitive fields like int or double (rating), check if it's non-zero or provide custom logic
+            if (updatedReviews.getRating() != 0) {
+                existingReview.setRating(updatedReviews.getRating());
+            }
+
+            reviewRepository.save(existingReview);
             return true;
         }
         return false;

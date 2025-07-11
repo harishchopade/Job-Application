@@ -81,11 +81,27 @@ public class JobServiceImpl implements JobService {
         Optional<Job> jobOptional = jobRepository.findById(id);
         if (jobOptional.isPresent()) {
             Job job = jobOptional.get();
-            job.setTitle(updateJob.getTitle());
-            job.setDescription(updateJob.getDescription());
-            job.setMinSalary(updateJob.getMinSalary());
-            job.setMaxSalary(updateJob.getMaxSalary());
-            job.setLocation(updateJob.getLocation());
+            
+            if(updateJob.getTitle() != null){
+                job.setTitle(updateJob.getTitle());
+            }
+
+            if(updateJob.getDescription() != null){
+                job.setDescription(updateJob.getDescription());
+            }
+            
+            if(updateJob.getMinSalary() != null){
+                job.setMinSalary(updateJob.getMinSalary());
+            }
+            
+            if(updateJob.getMaxSalary() != null){
+                job.setMaxSalary(updateJob.getMaxSalary());
+            }
+
+            if(updateJob.getLocation() != null){
+                job.setLocation(updateJob.getLocation());
+            }
+            
             jobRepository.save(job);
             return true;
         }
