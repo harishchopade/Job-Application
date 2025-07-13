@@ -35,7 +35,7 @@
 
 
 import { useEffect, useState } from 'react';
-import { getJobs } from '../services/api'; // Ensure this path is correct
+import { getJobs } from '../services/api'; 
 
 function JobPage() {
   const [jobs, setJobs] = useState([]);

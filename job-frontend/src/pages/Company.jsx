@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 function Company() {
   const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // ✅ Pass the specific company ID to the function
@@ -12,10 +14,34 @@ function Company() {
   };
 
   useEffect(() => {
+    setLoading(true);
     getCompanies()
-      .then(res => setCompanies(res.data))
-      .catch(err => console.error('Error fetching companies:', err));
+      .then(res => {
+        setCompanies(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching companies:', err);
+        setError('Failed to load companies. Please try again later.');
+        setLoading(false);
+      });
   }, []);
+
+    if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 font-sans antialiased p-8 flex justify-center items-center">
+        <div className="text-blue-700 text-xl font-semibold">Loading companies...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-red-50 font-sans antialiased p-8 flex justify-center items-center">
+        <div className="text-red-700 text-xl font-semibold">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans">
