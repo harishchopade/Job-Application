@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/companies/{companyId}")
+@RequestMapping("/api/companies/{companyId}")
 public class ReviewController {
 
     private ReviewServices reviewServices;

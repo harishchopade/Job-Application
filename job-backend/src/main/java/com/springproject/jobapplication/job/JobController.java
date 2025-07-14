@@ -9,6 +9,7 @@ import java.util.List;
 @RestController // (It is an Architectural Style)
 // @RequestMapping("/jobs") // (Class level Annotation which apply given route
 // to all the methods of the class as base URL)
+@RequestMapping("/api")
 public class JobController {
     private JobService jobService;
 

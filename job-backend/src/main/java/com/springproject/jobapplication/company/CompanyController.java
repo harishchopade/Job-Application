@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/companies")
+@RequestMapping("/api/companies")
 public class CompanyController {
     
     private CompanyService companyService;
