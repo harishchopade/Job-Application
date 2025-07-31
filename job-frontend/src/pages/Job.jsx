@@ -33,9 +33,9 @@
 
 // export default JobPage;
 
-
 import { useEffect, useState } from 'react';
-import { getJobs } from '../services/api'; 
+import { isLoggedIn } from '../services/auth'; // Import auth helper
+import { getJobs } from '../services/api';
 
 function JobPage() {
   const [jobs, setJobs] = useState([]);
@@ -43,17 +43,39 @@ function JobPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    getJobs()
-      .then(res => {
-        setJobs(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
+    // Check if user is logged in before making the request
+    if (!isLoggedIn()) {
+      setError('Please login to view jobs.');
+      setLoading(false);
+      // Optionally redirect to login page
+      // window.location.href = '/login';
+      return;
+    }
+
+    const fetchJobs = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const res = await getJobs();
+        setJobs(res);
+      } catch (err) {
         console.error('Error fetching jobs:', err);
-        setError('Failed to load jobs. Please try again later.');
+        
+        // Handle specific authentication error
+        if (err.message.includes('Authentication expired') || err.message.includes('No authentication token')) {
+          setError('Your session has expired. Please login again.');
+          // Optionally redirect to login page
+          // setTimeout(() => window.location.href = '/login', 2000);
+        } else {
+          setError('Failed to load jobs. Please try again later.');
+        }
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchJobs();
   }, []);
 
   if (loading) {
@@ -67,13 +89,23 @@ function JobPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-red-50 font-sans antialiased p-8 flex justify-center items-center">
-        <div className="text-red-700 text-xl font-semibold">{error}</div>
+        <div className="text-center">
+          <div className="text-red-700 text-xl font-semibold mb-4">{error}</div>
+          {error.includes('login') && (
+            <button 
+              onClick={() => window.location.href = '/login'}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Login
+            </button>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen  font-sans antialiased p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen font-sans antialiased p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-6 sm:p-8">
         <h2 className="text-3xl font-extrabold text-blue-800 text-center mb-8 tracking-tight">
           Job Openings

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getCompanies } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { isLoggedIn } from '../services/auth';
 
 function Company() {
   const [companies, setCompanies] = useState([]);
@@ -14,6 +15,14 @@ function Company() {
   };
 
   useEffect(() => {
+     if (!isLoggedIn()) {
+      setError('Please login to view companies.');
+      setLoading(false);
+      // Optionally redirect to login page
+      // window.location.href = '/login';
+      return;
+    }
+
     setLoading(true);
     getCompanies()
       .then(res => {
@@ -35,10 +44,20 @@ function Company() {
     );
   }
 
-  if (error) {
+    if (error) {
     return (
       <div className="min-h-screen bg-red-50 font-sans antialiased p-8 flex justify-center items-center">
-        <div className="text-red-700 text-xl font-semibold">{error}</div>
+        <div className="text-center">
+          <div className="text-red-700 text-xl font-semibold mb-4">{error}</div>
+          {error.includes('login') && (
+            <button 
+              onClick={() => window.location.href = '/login'}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go to Login
+            </button>
+          )}
+        </div>
       </div>
     );
   }
