@@ -55,8 +55,11 @@ public class UserService {
                                                                 .map(item -> item.getAuthority())
                                                                 .collect(Collectors.toList());
 
-        return new LoginResponse(jwtToken, userDetails.getUsername(), roles);
-        
+        return new LoginResponse(jwtToken, userDetails.getUsername(), roles);        
+    }
+
+    public Users findByUsername(String username){
+        return userRepo.findByUsername(username);
     }
 
 
