@@ -1,28 +1,65 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getJobsByCompanyId, getCompanyById } from '../services/api';
-import Company from './Company';
+import { isLoggedIn } from '../services/auth';
 
 function CompanyJobList() {
-    const { companyId } = useParams();
-    const [jobs, setJobs] = useState([]);
-    const [company, setCompany] = useState(null); // ✅ This was likely missing
+    const { companyId } = useParams();    
+    const [company, setCompany] = useState(null); 
+    const [jobs, setJobs] = useState([]);  // ✅ Added jobs state
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        getJobsByCompanyId(companyId)
-            .then(res => setJobs(res.data))
-            .catch(err => console.error('Error fetching jobs:', err));
+        if (!isLoggedIn()) {
+            setError('Please login to view jobs.');
+            setLoading(false);
+            return;
+        }
+        
+        const fetchJobsByCompanyId = async () => {
+            setLoading(true);
+            setError(null);
+            
+            try {
+                const res = await getJobsByCompanyId(companyId);
+                setJobs(res);  // ✅ Store jobs in state
+            } catch (err) {
+                console.error('Error fetching jobs:', err);
+                if (err.message.includes('Authentication expired') || err.message.includes('No authentication token')) {
+                    setError('Your session has expired. Please login again.');
+                } else {
+                    setError('Failed to load jobs. Please try again later.');
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        // Fetch Company Info
-        getCompanyById(companyId)
-            .then(res => setCompany(res.data))
-            .catch(err => console.error('Error fetching company:', err));
+        fetchJobsByCompanyId();
     }, [companyId]);
 
-    const data = getCompanyById(companyId);
-    console.log(data);
+    // ✅ Also fetch company details separately
+    useEffect(() => {
+        const fetchCompany = async () => {
+            try {
+                const res = await getCompanyById(companyId);
+                setCompany(res);
+            } catch (err) {
+                console.error('Error fetching company:', err);
+            }
+        };
+        fetchCompany();
+    }, [companyId]);
 
+    if (loading) {
+        return <p className="text-center text-blue-600">Loading jobs...</p>;
+    }
+
+    if (error) {
+        return <p className="text-center text-red-600">{error}</p>;
+    }
 
     return (
         <div className="min-h-screen p-4 sm:p-6 lg:p-8 font-sans">
@@ -39,10 +76,8 @@ function CompanyJobList() {
                         Job Openings {company ? `at ${company.name}` : ''}
                     </h2>
                 </div>
-                {/* <h2 className="text-2xl font-bold text-blue-800 mb-6">
-                    Job Openings {company ? `at ${company.name}` : ''}
-                </h2> */}
 
+                {/* ✅ FIXED: Now jobs state exists */}
                 {jobs.length === 0 ? (
                     <p className="text-gray-500">No jobs found for this company.</p>
                 ) : (
